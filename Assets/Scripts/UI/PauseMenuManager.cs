@@ -18,6 +18,17 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Button settingsBackButton;
 
     private bool isPaused = false;
+    private bool isGameOver = false;
+
+    void OnEnable()
+    {
+        PlayerController2D.OnPlayerDied += HandlePlayerDied;
+    }
+
+    void OnDisable()
+    {
+        PlayerController2D.OnPlayerDied -= HandlePlayerDied;
+    }
 
     void Start()
     {
@@ -26,11 +37,17 @@ public class PauseMenuManager : MonoBehaviour
         if (mainMenuButton != null) mainMenuButton.onClick.AddListener(ReturnToMainMenu);
         if (settingsBackButton != null) settingsBackButton.onClick.AddListener(BackToPauseMenu);
 
-        ResumeGame();
+        // Ocultar paneles en Start sin alterar Time.timeScale (previene conflictos de orden de ejecución)
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (settingsPanel != null) settingsPanel.SetActive(false);
+        isPaused = false;
     }
 
     void Update()
     {
+        // Si la partida terminó (Game Over), no permitimos pausar ni despausar con Escape
+        if (isGameOver) return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
@@ -49,6 +66,15 @@ public class PauseMenuManager : MonoBehaviour
                 PauseGame();
             }
         }
+    }
+
+    private void HandlePlayerDied()
+    {
+        isGameOver = true;
+        // Si estaba abierto el panel de pausa, lo cerramos para dar paso al Game Over
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (settingsPanel != null) settingsPanel.SetActive(false);
+        isPaused = false;
     }
 
     public void PauseGame()

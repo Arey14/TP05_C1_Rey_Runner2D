@@ -112,6 +112,8 @@ public class RunnerHUD : MonoBehaviour
     private void ShowGameOver()
     {
         isGameOver = true;
+        Time.timeScale = 0f;
+
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);

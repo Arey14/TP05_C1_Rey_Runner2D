@@ -37,6 +37,16 @@ public class RunnerSpawner : MonoBehaviour
     private Coroutine pickableCoroutine;
     private bool isSpawning = true;
 
+    void OnEnable()
+    {
+        PlayerController2D.OnPlayerDied += StopSpawning;
+    }
+
+    void OnDisable()
+    {
+        PlayerController2D.OnPlayerDied -= StopSpawning;
+    }
+
     void Start()
     {
         if (runnerConfig == null)
@@ -44,6 +54,7 @@ public class RunnerSpawner : MonoBehaviour
             runnerConfig = RunnerConfigSO.CreateDefault();
         }
 
+        isSpawning = true;
         obstacleCoroutine = StartCoroutine(ObstacleSpawnLoop());
         pickableCoroutine = StartCoroutine(PickableSpawnLoop());
     }
